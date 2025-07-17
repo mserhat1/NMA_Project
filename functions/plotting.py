@@ -33,16 +33,12 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
     channel = ecog_data['channel']
     behavior = ecog_data['behavior'] if ecog_data['behavior'] is not None else 'all states'
 
-    time = np.linspace(-pre_time, post_time, len(signal))
-    # plt.plot(time, average_channel)
-    # plt.xlim([-pre_time, post_time])
-
     # higher nperseg, noverlap means higher frequency resolution, lower time resolution
     # lower nperseg, noverlap means higher time resolution, lower frequency resolution
-    f, t, Sxx = spectrogram(signal, fs=sampling_rate, nperseg=nperseg, noverlap=nperseg // 2)
+    f_all, t, Sxx = spectrogram(signal, fs=sampling_rate, nperseg=nperseg, noverlap=nperseg // 2)
     t -= pre_time
-    freq_cap = (f >= lower_freq) & (f <= upper_freq)
-    f = f[freq_cap]
+    freq_cap = (f_all >= lower_freq) & (f_all <= upper_freq)
+    f = f_all[freq_cap]
     Sxx = Sxx[freq_cap, :]
 
     # Baseline correction with z-score
@@ -51,11 +47,12 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
 
     # z-score
     mu = baseline_power
-    sig = Sxx[:, baseline_mask].std(axis=1, keepdims=True)
+    sig = Sxx[:, baseline_mask].std(axis=1, keepdims=True) + 1e-10
     Sxx_z = (Sxx - mu) / sig
 
     plt.figure(figsize=(10, 4))
     plt.pcolormesh(t, f, Sxx_z, shading='gouraud')
+    plt.gca().set_aspect('auto')
     plt.ylabel('Frequency (Hz)')
     plt.xlabel('Time (s)')
     plt.title(f'Spectrogram - Averaged over epochs, Channel {channel}, {behavior}, Baseline adjusted with z-score')
