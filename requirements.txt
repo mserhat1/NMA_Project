@@ -1,0 +1,7 @@
+mne
+pynwb
+dandi
+ndx_events
+fsspec
+h5py
+scipy
