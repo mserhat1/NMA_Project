@@ -26,7 +26,7 @@ def psd_welch(ecog_data, lower_freq, upper_freq, n_per_seg=128):
 
 # Specify nperseg as a power of 2, lower value = high time res., low freq. res.
 # higher value = low time res., high freq. res.
-def spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_correction='z-score'):
+def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_correction='z-score'):
     pre_time, post_time = ecog_data['window']
     signal = ecog_data['signal']
     sampling_rate = ecog_data['sampling_rate']
