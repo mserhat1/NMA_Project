@@ -62,5 +62,3 @@ def spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_correct
     plt.colorbar(label='Power')
     plt.tight_layout()
     plt.show()
-
-def wavelet_transform(ecog_data)
