@@ -27,32 +27,37 @@ def psd_welch(ecog_data, lower_freq, upper_freq, n_per_seg=128):
 # Specify nperseg as a power of 2, lower value = high time res., low freq. res.
 # higher value = low time res., high freq. res.
 def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_correction='z-score'):
+    event_epochs = ecog_data['signal']
     pre_time, post_time = ecog_data['window']
     signal = ecog_data['signal']
     sampling_rate = ecog_data['sampling_rate']
     channel = ecog_data['channel']
     behavior = ecog_data['behavior'] if ecog_data['behavior'] is not None else 'all states'
 
-    # higher nperseg, noverlap means higher frequency resolution, lower time resolution
-    # lower nperseg, noverlap means higher time resolution, lower frequency resolution
-    f_all, t, Sxx = spectrogram(signal, fs=sampling_rate, nperseg=nperseg, noverlap=nperseg // 2)
-    t -= pre_time
-    freq_cap = (f_all >= lower_freq) & (f_all <= upper_freq)
-    f = f_all[freq_cap]
-    Sxx = Sxx[freq_cap, :]
+    Sxx_epochs = []
 
-    # Baseline correction with z-score
-    baseline_mask = (t >= -pre_time) & (t <= -pre_time / 2)  # the interval we use to calculate baseline
-    baseline_power = Sxx[:, baseline_mask].mean(axis=1, keepdims=True)
+    for i in event_epochs.shape[0]:
+        f, t, Sxx = spectrogram(signal, fs=sampling_rate, nperseg=nperseg, noverlap=nperseg // 2)
+        t -= pre_time
+        freq_cap = (f >= lower_freq) & (f <= upper_freq)
+        f = f[freq_cap]
+        Sxx = Sxx[freq_cap, :]
 
-    # z-score
-    mu = baseline_power
-    sig = Sxx[:, baseline_mask].std(axis=1, keepdims=True) + 1e-10
-    Sxx_z = (Sxx - mu) / sig
+        baseline_mask = (t >= -pre_time) & (t <= -pre_time / 2)  # the interval we use to calculate baseline
+        baseline_power = Sxx[:, baseline_mask].mean(axis=1, keepdims=True)
 
+        # z-score
+        mu = baseline_power
+        sig = Sxx[:, baseline_mask].std(axis=1, keepdims=True)
+        Sxx_z = (Sxx - mu) / sig
+
+        Sxx_epochs.append(Sxx_z)
+
+    Sxx_epochs = np.array(Sxx_epochs)
+    Sxx = np.mean(Sxx_epochs, axis=0)
+    
     plt.figure(figsize=(10, 4))
-    plt.pcolormesh(t, f, Sxx_z, shading='gouraud')
-    plt.gca().set_aspect('auto')
+    plt.pcolormesh(t, f, Sxx, shading='gouraud')
     plt.ylabel('Frequency (Hz)')
     plt.xlabel('Time (s)')
     plt.title(f'Spectrogram - Averaged over epochs, Channel {channel}, {behavior}, Baseline adjusted with z-score')
