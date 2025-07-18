@@ -54,15 +54,18 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
 
         Sxx_epochs.append(Sxx_z)
 
+    print(f)
     Sxx_epochs = np.array(Sxx_epochs)
-    print(Sxx_epochs.shape, "Sxx_epochs.shape")
-    Sxx = np.mean(Sxx_epochs, axis=0)
+    Sxx_avg = np.mean(Sxx_epochs, axis=0)
     
     plt.figure(figsize=(10, 4))
-    plt.pcolormesh(t, f, Sxx, shading='gouraud')
+    plt.pcolormesh(t, f, Sxx_avg, shading='gouraud')
     plt.ylabel('Frequency (Hz)')
     plt.xlabel('Time (s)')
     plt.title(f'Spectrogram - Averaged over epochs, Channel {channel}, {behavior}, Baseline adjusted with z-score')
     plt.colorbar(label='Power')
     plt.tight_layout()
     plt.show()
+
+    return Sxx_epochs
+
