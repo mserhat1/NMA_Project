@@ -39,7 +39,10 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
     for i in range(event_epochs.shape[0]):
         signal = event_epochs[i, :]
         f, t, Sxx = spectrogram(signal, fs=sampling_rate, nperseg=nperseg, noverlap=nperseg // 2)
-        t -= pre_time
+        
+        epoch_duration = event_epochs.shape[1] / 250
+        t = np.linspace(-pre_time, epoch_duration - pre_time, Sxx.shape[1])
+    
         freq_cap = (f >= lower_freq) & (f <= upper_freq)
         f = f[freq_cap]
         Sxx = Sxx[freq_cap, :]
