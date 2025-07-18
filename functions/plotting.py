@@ -38,16 +38,15 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
 
     for i in range(event_epochs.shape[0]):
         signal = event_epochs[i, :]
+        if np.count_nonzero(np.isnan(signal)) > 0:
+          continue
         f, t, Sxx = spectrogram(signal, fs=sampling_rate, nperseg=nperseg, noverlap=nperseg // 2)
-        
-        epoch_duration = event_epochs.shape[1] / sampling_rate
-        t = np.linspace(-pre_time, epoch_duration - pre_time, Sxx.shape[1])
     
         freq_cap = (f >= lower_freq) & (f <= upper_freq)
         f = f[freq_cap]
         Sxx = Sxx[freq_cap, :]
 
-        baseline_mask = (t >= -pre_time) & (t <= -pre_time / 2)  # the interval we use to calculate baseline
+        baseline_mask = (t >= 0) & (t <= pre_time / 2)  # the interval we use to calculate baseline
         baseline_power = Sxx[:, baseline_mask].mean(axis=1, keepdims=True)
 
         # z-score
@@ -55,11 +54,14 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
         sig = Sxx[:, baseline_mask].std(axis=1, keepdims=True)
         Sxx_z = (Sxx - mu) / sig
 
+        
+
         Sxx_epochs.append(Sxx_z)
 
-    print(f)
     Sxx_epochs = np.array(Sxx_epochs)
     Sxx_avg = np.mean(Sxx_epochs, axis=0)
+
+
     
     plt.figure(figsize=(10, 4))
     plt.pcolormesh(t, f, Sxx_avg, shading='gouraud')
@@ -69,6 +71,4 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
     plt.colorbar(label='Power')
     plt.tight_layout()
     plt.show()
-
-    return Sxx_epochs
 
