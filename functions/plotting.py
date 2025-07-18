@@ -55,6 +55,7 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
         Sxx_epochs.append(Sxx_z)
 
     Sxx_epochs = np.array(Sxx_epochs)
+    print(Sxx_epochs.shape, "Sxx_epochs.shape")
     Sxx = np.mean(Sxx_epochs, axis=0)
     
     plt.figure(figsize=(10, 4))
