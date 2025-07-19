@@ -46,7 +46,7 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
         f = f[freq_cap]
         Sxx = Sxx[freq_cap, :]
 
-        baseline_mask = (t >= -pre_time) & (t <= -pre_time / 2)  # the interval we use to calculate baseline
+        baseline_mask = (t >= 0) & (t <= pre_time / 2)  # the interval we use to calculate baseline
         baseline_power = Sxx[:, baseline_mask].mean(axis=1, keepdims=True)
 
         # z-score
