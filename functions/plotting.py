@@ -40,7 +40,7 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
         signal = event_epochs[i, :]
         if np.count_nonzero(np.isnan(signal)) > 0:
           continue
-        f, t, Sxx = spectrogram(signal, fs=sampling_rate, nperseg=nperseg, noverlap=nperseg // 2)
+        f, t, Sxx = spectrogram(signal, fs=sampling_rate, nperseg=nperseg, noverlap=nperseg // 8)
         t -= pre_time
     
         freq_cap = (f >= lower_freq) & (f <= upper_freq)
