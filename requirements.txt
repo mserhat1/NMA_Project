@@ -5,4 +5,4 @@ ndx_events
 fsspec
 h5py
 scipy
-pywt
+pywavelets
