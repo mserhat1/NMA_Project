@@ -41,12 +41,13 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
         if np.count_nonzero(np.isnan(signal)) > 0:
           continue
         f, t, Sxx = spectrogram(signal, fs=sampling_rate, nperseg=nperseg, noverlap=nperseg // 2)
+        t -= pre_time
     
         freq_cap = (f >= lower_freq) & (f <= upper_freq)
         f = f[freq_cap]
         Sxx = Sxx[freq_cap, :]
 
-        baseline_mask = (t >= 0) & (t <= pre_time / 2)  # the interval we use to calculate baseline
+        baseline_mask = (t >= -pre_time) & (t <= -pre_time / 2)  # the interval we use to calculate baseline
         baseline_power = Sxx[:, baseline_mask].mean(axis=1, keepdims=True)
 
         # z-score
