@@ -69,12 +69,6 @@ def extract_neural_data(nwbfile, channel, pre_time, post_time, behavior=None):
 
     return ecog_data
 
-# can use the output of extract_neural_data as the input to avg_across_epochs
-def avg_across_epochs(ecog_data):
-    signal = ecog_data['signal']
-    average_signal = np.nanmean(signal, axis=0) # shape = (n_samples, )
-    ecog_data['signal'] = average_signal
-    return ecog_data
 
 
 
