@@ -1,3 +1,5 @@
+import numpy as np
+
 # can use the output of extract_neural_data as the input to avg_across_epochs
 def avg_across_epochs(ecog_data):
     signal = ecog_data['signal']
