@@ -4,12 +4,12 @@ from scipy.signal import spectrogram
 import matplotlib.pyplot as plt
 import pywt
 
-def plot_spatial_data(beh_data, keypoints):
+def plot_spatial_data(spatial_data, keypoints):
     for kp in keypoints:
         plt.figure(figsize=(12, 6))
-        plt.plot(beh_data[kp]['timestamps'], beh_data[kp]['data'][:, 0], label=kp + ' X')
-        plt.plot(beh_data[kp]['timestamps'], beh_data[kp]['data'][:, 1], label=kp + ' Y')
-    
+        plt.plot(spatial_data[kp]['timestamps'], spatial_data[kp]['data'][:, 0], label=kp + ' X')
+        plt.plot(spatial_data[kp]['timestamps'], spatial_data[kp]['data'][:, 1], label=kp + ' Y')
+
         plt.xlabel('Time (s)')
         plt.ylabel('Position (pixels)')
         plt.title('Time Course of ' + kp + ' Position')
