@@ -4,11 +4,28 @@ from scipy.signal import spectrogram
 import matplotlib.pyplot as plt
 import pywt
 
-def plot_spatial_data(spatial_data, keypoints):
+import matplotlib.pyplot as plt
+import numpy as np
+
+def plot_spatial_data(spatial_data, keypoints, time_window=None, plot_histogram=True):
     for kp in keypoints:
+        if time_window is None:
+            timestamps = spatial_data[kp]['timestamps']
+            x_axis = spatial_data[kp]['data'][:, 0]
+            y_axis = spatial_data[kp]['data'][:, 1]
+        else:
+            rate = spatial_data[kp]['sampling_rate']
+            t1, t2 = time_window
+            assert t1 >= 0 and t2 <= spatial_data[kp]['data'].shape[0]/rate and t1 < t2, 'We need 0 <= t1 < t2 <= duration of data'
+            s1 = int(t1 * rate)
+            s2 = int(t2 * rate)
+            timestamps = spatial_data[kp]['timestamps'][s1:s2]
+            x_axis = spatial_data[kp]['data'][s1:s2, 0]
+            y_axis = spatial_data[kp]['data'][s1:s2, 1]
+
         plt.figure(figsize=(12, 6))
-        plt.plot(spatial_data[kp]['timestamps'], spatial_data[kp]['data'][:, 0], label=kp + ' X')
-        plt.plot(spatial_data[kp]['timestamps'], spatial_data[kp]['data'][:, 1], label=kp + ' Y')
+        plt.plot(timestamps, x_axis, label=kp + ' X')
+        plt.plot(timestamps, y_axis, label=kp + ' Y')
 
         plt.xlabel('Time (s)')
         plt.ylabel('Position (pixels)')
@@ -16,6 +33,16 @@ def plot_spatial_data(spatial_data, keypoints):
         plt.legend()
         plt.grid(True)
         plt.show()
+
+        if plot_histogram:
+            # Plotting histograms
+            plt.figure(figsize=(12, 6))
+            plt.hist([x_axis, y_axis], label=['x axis', 'y axis'], bins='auto', edgecolor='black')
+            plt.xlabel('Value')
+            plt.ylabel('Frequency')
+            plt.legend()
+            plt.grid(True)
+            plt.show()
 
 # ecog_data is the output of extract_neural_data, freq_range is a tuple (a, b), where a < b
 def psd_welch(ecog_data, lower_freq, upper_freq, n_per_seg=128):
