@@ -4,6 +4,19 @@ from scipy.signal import spectrogram
 import matplotlib.pyplot as plt
 import pywt
 
+def plot_spatial_data(beh_data, keypoints):
+    for kp in keypoints:
+        plt.figure(figsize=(12, 6))
+        plt.plot(beh_data[kp]['timestamps'], beh_data[kp]['data'][:, 0], label=kp + ' X')
+        plt.plot(beh_data[kp]['timestamps'], beh_data[kp]['data'][:, 1], label=kp + ' Y')
+    
+        plt.xlabel('Time (s)')
+        plt.ylabel('Position (pixels)')
+        plt.title('Time Course of ' + kp + ' Position')
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+
 # ecog_data is the output of extract_neural_data, freq_range is a tuple (a, b), where a < b
 def psd_welch(ecog_data, lower_freq, upper_freq, n_per_seg=128):
     assert lower_freq < upper_freq, 'lower_freq must be less than upper_freq'
