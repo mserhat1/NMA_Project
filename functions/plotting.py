@@ -35,13 +35,22 @@ def plot_spatial_data(spatial_data, keypoints, time_window='all', plot_histogram
         plt.show()
 
         if plot_histogram:
-            # Plotting histograms
-            plt.figure(figsize=(12, 6))
-            plt.hist([x_axis, y_axis], label=['x axis', 'y axis'], bins='auto', edgecolor='black')
-            plt.xlabel('Value')
-            plt.ylabel('Frequency')
-            plt.legend()
-            plt.grid(True)
+            fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
+            # Plotting the histogram for x
+            axes[0].hist(x_axis, label='x axis', bins='auto')
+            axes[0].set_title('Histogram of ' + kp + ' X Position')
+            axes[0].set_xlabel('Value')
+            axes[0].set_ylabel('Frequency')
+            axes[0].grid(True)
+
+            # Plotting the histogram for y
+            axes[1].hist(y_axis, label='y axis', bins='auto', color='orange')
+            axes[1].set_title('Histogram of ' + kp + ' Y Position')
+            axes[1].set_xlabel('Value')
+            axes[1].set_ylabel('Frequency')
+            axes[1].grid(True)
+
+            plt.tight_layout()
             plt.show()
 
 # ecog_data is the output of extract_neural_data, freq_range is a tuple (a, b), where a < b
