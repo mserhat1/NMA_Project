@@ -6,3 +6,4 @@ fsspec
 h5py
 scipy
 pywavelets
+scikit-learn
