@@ -7,9 +7,9 @@ import pywt
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_spatial_data(spatial_data, keypoints, time_window=None, plot_histogram=True):
+def plot_spatial_data(spatial_data, keypoints, time_window='all', plot_histogram=True):
     for kp in keypoints:
-        if time_window is None:
+        if time_window == 'all':
             timestamps = spatial_data[kp]['timestamps']
             x_axis = spatial_data[kp]['data'][:, 0]
             y_axis = spatial_data[kp]['data'][:, 1]
