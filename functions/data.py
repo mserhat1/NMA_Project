@@ -91,7 +91,7 @@ def extract_spatial_data(nwbfile):
             timestamps = starting_time + np.arange(len(keypoint_data)) / rate
 
         # Store the data and timestamps in the dictionary with the keypoint name as the key
-        data[keypoint_name] = {'data': keypoint_data, 'timestamps': timestamps}
+        spatial_data[keypoint_name] = {'data': keypoint_data, 'timestamps': timestamps}
 
     return spatial_data
 
