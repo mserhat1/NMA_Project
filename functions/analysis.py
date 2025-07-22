@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 # pcs =
 # top_joints = n gives the n joints that contribute to the first PC the most
 # top_kps = n gives the n keypoints that contribute to the first PC the most
-def keypoints_pca(spatial_data, time_window='all', pcs='all', top_kps=4):
+# returns the array containing principal components in order of explained variance
+def keypoints_pca(spatial_data, time_window='all', pcs='all'):
     keypoints = spatial_data.keys()
 
     kp_data = []
@@ -38,18 +39,15 @@ def keypoints_pca(spatial_data, time_window='all', pcs='all', top_kps=4):
     # scaling
     kp_scaled = StandardScaler().fit_transform(kp_interp)
 
-    if pcs == 'all':
-        pcs = len(kp_names)
-
     pca = PCA(n_components=pcs)
     pca.fit_transform(kp_scaled)
 
-    loadings = np.abs(pca.components_[0])
-    top_indices = np.argsort(loadings)[::-1]
-    top_features = [kp_names[i] for i in top_indices[:top_kps]]
-    print("Top movement contributors in the first PC:", top_features)
+    #loadings = np.abs(pca.components_[0])
+    #top_indices = np.argsort(loadings)[::-1]
+    #top_features = [kp_names[i] for i in top_indices[:top_kps]]
+    #print("Top movement contributors in the first PC:", top_features)
 
-    pc_vector = np.arange(1, pcs + 1)
+    pc_vector = np.arange(1, len(kp_names) + 1)
     variance_per_pc = pca.explained_variance_ratio_
     plt.figure(figsize=(12, 6))
     plt.plot(pc_vector, variance_per_pc, marker='o', fillstyle='full')
@@ -57,6 +55,8 @@ def keypoints_pca(spatial_data, time_window='all', pcs='all', top_kps=4):
     plt.ylabel("Explained variance ratio")
     plt.xticks(pc_vector)
     plt.title("Variance ratio explained by each principal component")
+
+    return pca.components_
 
 
 
