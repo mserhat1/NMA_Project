@@ -85,6 +85,9 @@ def extract_neural_data(nwbfile, time_window='all', channel='all'):
         neural_window = neural_data[s1:s2]
     else:
         neural_window = neural_data[s1:s2, channel]
+
+    if len(neural_window.shape) == 1:
+        neural_window = neural_window.reshape((1,-1))
         
     ecog_data = {'signal': neural_window, 'channel': channel, 'sampling_rate': sampling_rate, 'window': time_window}
 
