@@ -60,14 +60,7 @@ def keypoints_pca(spatial_data, time_window='all', plot=True):
 # it can be a 0 < float < 1, which specifies the percentage of variance you want your components to explain.
 def ecog_pca(ecog_data, n_components, time_window='all',  plot=True):
     signal = ecog_data['signal'] # (n_samples, n_channels)
-    rate = ecog_data['sampling_rate']
-
-    if time_window != 'all':
-        t1, t2 = time_window
-        s1 = int(t1 * rate)
-        s2 = int(t2 * rate)
-        signal = signal[s1:s2, :]
-
+      
     # interpolate over nan's
     signal_interp = signal.copy()
     for i in range(signal_interp.shape[1]):
