@@ -64,12 +64,11 @@ def psd_welch(ecog_data, lower_freq, upper_freq, n_per_seg=128):
     freqs = freqs[freq_cap]
 
     channel = ecog_data['channel']
-    behavior = ecog_data['behavior'] if ecog_data['behavior'] is not None else 'all states'
     plt.figure(figsize=(8, 4))
     plt.plot(freqs, 10 * np.log10(psd))  # Convert to dB
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Power Spectral Density (dB/Hz)')
-    plt.title(f'PSD (Welch) - Averaged Signal, Channel {channel}, {behavior}')
+    plt.title(f'PSD (Welch) - Averaged Signal, Channel {channel}')
     plt.grid(True)
     plt.tight_layout()
     plt.show()
@@ -82,7 +81,6 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
     signal = ecog_data['signal']
     sampling_rate = ecog_data['sampling_rate']
     channel = ecog_data['channel']
-    behavior = ecog_data['behavior'] if ecog_data['behavior'] is not None else 'all states'
 
     Sxx_epochs = []
 
@@ -114,7 +112,7 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
     plt.pcolormesh(t, f, Sxx_avg, shading='gouraud')
     plt.ylabel('Frequency (Hz)')
     plt.xlabel('Time (s)')
-    plt.title(f'Spectrogram - Averaged over epochs, Channel {channel}, {behavior}, Baseline adjusted with z-score')
+    plt.title(f'Spectrogram - Averaged over epochs, Channel {channel}, Baseline adjusted with z-score')
     plt.colorbar(label='Power')
     plt.tight_layout()
     plt.show()
