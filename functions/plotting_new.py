@@ -89,21 +89,19 @@ def psd_welch(ecog_data, lower_freq, upper_freq, n_per_seg=128):
 
 # Specify nperseg as a power of 2, lower value = high time res., low freq. res.
 # higher value = low time res., high freq. res.
+# Specify nperseg as a power of 2, lower value = high time res., low freq. res.
+# higher value = low time res., high freq. res.
 def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_correction=True):
     signal = ecog_data['signal']
     rate = ecog_data['sampling_rate']
     t1, t2 = ecog_data['window']
-    s1 = int(t1 * rate)
-    s2 = int(t2 * rate)
-
-    signal_interp = signal.copy()
 
     # interpolating to clean nan's
     nans = np.isnan(signal)
     indices = np.arange(len(signal))
     signal_interp = np.interp(indices, indices[~nans], signal[~nans])
 
-    f, t, Sxx = spectrogram(signal, fs=ecog_data['sampling_rate'], nperseg=nperseg, noverlap=nperseg // 2)
+    f, t, Sxx = spectrogram(signal_interp, fs=ecog_data['sampling_rate'], nperseg=nperseg, noverlap=nperseg // 2)
 
     freq_cap = (f >= lower_freq) & (f <= upper_freq)
     f = f[freq_cap]
@@ -131,46 +129,33 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
     plt.tight_layout()
     plt.show()
 
-# uses complex morlet wavelet by default, specify wavelet parameter for other choices
-import pywt
-import numpy as np
-import matplotlib.pyplot as plt
-
-def plot_morlet(ecog_data, lower_freq, upper_freq, B, C):
-    event_epochs = ecog_data['signal']
-    pre_time, post_time = ecog_data['window']
-    dt = 1 / ecog_data['sampling_rate']
+def plot_morlet(ecog_data, lower_freq, upper_freq, B, C, baseline_correction=True):
+    signal = ecog_data['signal']
+    rate = ecog_data['sampling_rate']
+    t1, t2 = ecog_data['window']
     #freqs = np.logspace(np.log10(lower_freq), np.log10(upper_freq), num=200) * dt
     freqs = np.arange(lower_freq, upper_freq + 2, 2)
-    scales = pywt.frequency2scale(f'cmor{B}-{C}', freqs * dt)
+    scales = pywt.frequency2scale(f'cmor{B}-{C}', freqs / rate)
 
-    wt_epochs = []
+    # interpolating to clean nan's
+    nans = np.isnan(signal)
+    indices = np.arange(len(signal))
+    signal_interp = np.interp(indices, indices[~nans], signal[~nans])
 
-    t = np.linspace(-pre_time, post_time, len(event_epochs[0]))
-    b_mask = (t >= -pre_time) & (t <= -pre_time / 2)
+    cwt, _ = pywt.cwt(signal_interp, scales, f'cmor{B}-{C}', sampling_period=1 / rate)
+    power = np.abs(cwt) ** 2
 
-    z_sum = 0
-    n_count = 0
-
-    for i in range(event_epochs.shape[0]):
-        signal = event_epochs[i, :]
-        if np.count_nonzero(np.isnan(signal)) > 0:
-            continue
-
-        cwt, _ = pywt.cwt(signal, scales, f'cmor{B}-{C}', sampling_period=dt)
-        power = np.abs(cwt) ** 2
+    if baseline_correction:
+        t = np.linspace(t1, t2, int((t2 - t1) * rate))
+        b_mask = (t >= t1) & (t <= t1 + (t2 - t1) / 5)
 
         mu  = power[:, b_mask].mean(axis=1, keepdims=True)
         sigma  = power[:, b_mask].std(axis=1,  keepdims=True) + 1e-10
-        z  = (power - mu) / sigma
+        z = (power - mu) / sigma
 
-        z_sum += z
-        n_count += 1
-
-    z_avg = z_sum / n_count
 
     plt.figure(figsize=(10, 6))
-    plt.imshow(z_avg, extent=[t[0], t[-1], freqs[0], freqs[-1]],
+    plt.imshow(z, extent=[t[0], t[-1], freqs[0], freqs[-1]],
                cmap='viridis', aspect='auto', origin='lower')
     plt.colorbar(label='Power')
     plt.ylabel('Frequency (Hz)')
