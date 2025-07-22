@@ -1,0 +1,1 @@
+def RRR(K, N):

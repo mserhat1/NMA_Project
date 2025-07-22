@@ -56,6 +56,48 @@ def keypoints_pca(spatial_data, time_window='all', plot=True):
 
     return pca_output
 
+# n_components can be an integer (this specifies the exact no. of components returned)
+# it can be a 0 < float < 1, which specifies the percentage of variance you want your components to explain.
+def ecog_pca(ecog_data, n_components, time_window='all',  plot=True):
+    signal = ecog_data['signal'] # (n_samples, n_channels)
+    rate = ecog_data['sampling_rate']
+
+    if time_window != 'all':
+        t1, t2 = time_window
+        s1 = int(t1 * rate)
+        s2 = int(t2 * rate)
+        signal = signal[s1:s2, :]
+
+    # interpolate over nan's
+    signal_interp = signal.copy()
+    for i in range(signal_interp.shape[1]):
+        nans = np.isnan(signal_interp[:, i])
+        indices = np.arange(signal_interp.shape[0])
+        signal_interp[:, i] = np.interp(indices, indices[~nans], signal[:, i][~nans])
+
+    # scaling
+    signal_scaled = StandardScaler().fit_transform(signal_interp)
+
+    pca = PCA(n_components=n_components)
+    pca.fit_transform(signal_scaled)
+
+    n_pcs = pca.components_.shape[0]
+
+    if plot:
+        pc_vector = np.arange(1, n_pcs + 1)
+        variance_per_pc = pca.explained_variance_ratio_
+        plt.figure(figsize=(12, 6))
+        plt.plot(pc_vector, variance_per_pc, marker='o', fillstyle='full')
+        plt.xlabel("Principal components")
+        plt.ylabel("Explained variance ratio")
+        plt.xticks(pc_vector)
+        plt.title("Variance ratio explained by each principal component")
+
+    pca_output = {'components': pca.components_, 'kp_data': signal_scaled, 'pca': pca}
+
+    return pca_output
+
+
 
 
 
