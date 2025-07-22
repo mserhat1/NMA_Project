@@ -39,7 +39,7 @@ def keypoints_pca(spatial_data, time_window='all', pcs='all'):
     # scaling
     kp_scaled = StandardScaler().fit_transform(kp_interp)
 
-    pca = PCA(n_components=pcs)
+    pca = PCA(n_components=len(kp_names))
     pca.fit_transform(kp_scaled)
 
     #loadings = np.abs(pca.components_[0])
