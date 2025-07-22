@@ -108,7 +108,7 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
     Sxx = Sxx[freq_cap, :]
 
     if baseline_correction:
-        baseline_mask = (t >= t1 ) & (t <= t1 + (t2 - t1) / 5)  # the interval we use to calculate baseline
+        baseline_mask = (t >= 0) & (t <= (t2 - t1) / 5)  # the interval we use to calculate baseline
         baseline_power = Sxx[:, baseline_mask].mean(axis=1, keepdims=True)
 
         # z-score
@@ -117,6 +117,7 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
         Sxx_final = (Sxx - mu) / sig
     else:
         Sxx_final = Sxx.copy()
+    print(Sxx_final)
 
     ch = ecog_data['channel']
 
