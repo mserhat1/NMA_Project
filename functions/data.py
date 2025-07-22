@@ -69,7 +69,7 @@ def extract_behavioral_data(nwbfile, channel, pre_time, post_time, behavior=None
 
     return ecog_data
 
-def extract_neural_data(nwbfile, channel, time_window):
+def extract_neural_data(nwbfile, time_window='all', channel='all'):
     neural_data = nwbfile.acquisition['ElectricalSeries'].data
     sampling_rate = nwbfile.acquisition['ElectricalSeries'].rate
     
@@ -81,8 +81,11 @@ def extract_neural_data(nwbfile, channel, time_window):
         s1 = int(t1 * sampling_rate)
         s2 = int(t2 * sampling_rate) 
 
-    neural_window = neural_data[s1:s2, channel]
-
+    if channel == 'all':
+        neural_window = neural_data[s1:s2, channel]
+    else:
+        neural_window = neural_data[s1:s2]
+        
     ecog_data = {'signal': neural_window, 'channel': channel, 'sampling_rate': sampling_rate, 'window': time_window}
 
     return ecog_data
