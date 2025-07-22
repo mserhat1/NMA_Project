@@ -69,6 +69,24 @@ def extract_behavioral_data(nwbfile, channel, pre_time, post_time, behavior=None
 
     return ecog_data
 
+def extract_neural_data(nwbfile, channel, time_window):
+    neural_data = nwbfile.acquisition['ElectricalSeries'].data
+    sampling_rate = nwbfile.acquisition['ElectricalSeries'].rate
+    
+    if time_window == 'all':
+        s1 = 0
+        s2 = neural_data.shape[0]
+    else:
+        t1, t2 = time_window
+        s1 = int(t1 * sampling_rate)
+        s2 = int(t2 * sampling_rate) 
+
+    neural_window = neural_data[s1:s2, channel]
+
+    ecog_data = {'signal': neural_window, 'channel': channel, 'sampling_rate': sampling_rate, 'window': time_window}
+
+    return ecog_data
+
 # Thanks to Amirreza for this function;
 def extract_spatial_data(nwbfile):
     # Access the 'Position' data interface
@@ -92,7 +110,7 @@ def extract_spatial_data(nwbfile):
 
         # Store the data and timestamps in the dictionary with the keypoint name as the key
         spatial_data[keypoint_name] = {'data': keypoint_data, 'timestamps': timestamps, 'sampling_rate': rate}
-
+    
     return spatial_data
 
 
