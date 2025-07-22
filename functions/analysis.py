@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 # top_joints = n gives the n joints that contribute to the first PC the most
 # top_kps = n gives the n keypoints that contribute to the first PC the most
 # returns the array containing principal components in order of explained variance
-def keypoints_pca(spatial_data, time_window='all', pcs='all'):
+def keypoints_pca(spatial_data, time_window='all'):
     keypoints = spatial_data.keys()
 
     kp_data = []
