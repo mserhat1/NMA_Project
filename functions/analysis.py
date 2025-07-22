@@ -47,7 +47,7 @@ def keypoints_pca(spatial_data, time_window='all', pcs='all', top_kps=4):
     loadings = np.abs(pca.components_[0])
     top_indices = np.argsort(loadings)[::-1]
     top_features = [kp_names[i] for i in top_indices[:top_kps]]
-    print("Top movement contributors:", top_features)
+    print("Top movement contributors in the first PC:", top_features)
 
     pc_vector = np.arange(1, pcs + 1)
     variance_per_pc = pca.explained_variance_ratio_
