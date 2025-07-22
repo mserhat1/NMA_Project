@@ -117,8 +117,7 @@ def plot_spectrogram(ecog_data, lower_freq, upper_freq, nperseg=256, baseline_co
         Sxx_final = (Sxx - mu) / sig
     else:
         Sxx_final = Sxx.copy()
-    print(Sxx_final)
-
+        
     ch = ecog_data['channel']
 
     plt.figure(figsize=(10, 4))
