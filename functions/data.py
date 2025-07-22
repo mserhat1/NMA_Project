@@ -28,7 +28,7 @@ def get_datafile(sbj, session):
 # behavior should be a list of activities whose neural data you are interested in.
 # e.g. ['Talk', 'Eat', 'Computer/phone']
 # if you want all the neural data in the file, do not specify behavior.
-def extract_neural_data(nwbfile, channel, pre_time, post_time, behavior=None):
+def extract_behavioral_data(nwbfile, channel, pre_time, post_time, behavior=None):
     reach_events = nwbfile.processing['behavior'].data_interfaces['ReachEvents']
     timestamps_re = reach_events.timestamps[:]  # the timing in s of each reach
     neural_data = nwbfile.acquisition['ElectricalSeries'].data
