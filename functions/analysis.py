@@ -1,5 +1,6 @@
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from scipy.interpolate import interp1d
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -89,6 +90,23 @@ def ecog_pca(ecog_data, n_components, time_window='all',  plot=True):
     pca_output = {'components': pca.components_, 'kp_data': signal_scaled, 'pca': pca}
 
     return pca_output
+
+def time_interpolate(spatial, neural, kind='linear'):
+    n_original = spatial.shape[0]
+    n_target = neural.shape[0]
+
+    x_original = np.linspace(0, 1, n_original)
+    x_new = np.linspace(0, 1, n_target)
+
+    interpolated_data = np.empty((n_target, spatial.shape[1]))
+
+    for i in range(spatial.shape[1]):
+        f = interp1d(x_original, spatial[:, i], kind=kind)  # or 'cubic'
+        interpolated_data[:, i] = f(x_new)
+
+    return interpolated_data
+
+    
 
 
 
