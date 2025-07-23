@@ -94,6 +94,15 @@ def ecog_pca(ecog_data, n_components, time_window='all',  plot=True):
 
     return pca_output
 
+def project_onto_pcs(data, n_pcs):
+  ts_data = data['kp_data']
+  pcs = data['components']
+  top_pcs = pcs[:n_pcs, :]
+
+  projected = ts_data @ top_pcs.T
+
+  return projected # ndarray (n_samples, n_pcs)
+
 def time_interpolate(spatial, neural, kind='linear'):
     n_original = spatial.shape[0]
     n_target = neural.shape[0]
