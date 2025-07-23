@@ -1,8 +1,8 @@
 import numpy as np
-def RRR(K, N):
+def RRR(K, N, r):
     # K: (T, d) demeaned PCs
     # N: (T, D) demeaned neural targets
-    r = K.shape[1]  # desired rank  (≤ d)
+    assert r <= K.shape[1]  # desired rank  (≤ d)
 
     # full least‑squares map
     B_full = np.linalg.pinv(K) @ N  # (d, D)
