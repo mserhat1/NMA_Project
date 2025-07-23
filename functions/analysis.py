@@ -3,7 +3,6 @@ from sklearn.decomposition import PCA
 from scipy.interpolate import interp1d
 import numpy as np
 import matplotlib.pyplot as plt
-from functions.analysis import time_interpolate
 
 # pcs =
 # top_joints = n gives the n joints that contribute to the first PC the most
