@@ -94,7 +94,7 @@ def extract_neural_data(nwbfile, time_window='all', channel='all'):
     return ecog_data
 
 # Thanks to Amirreza for this function;
-def extract_spatial_data_obsolete(nwbfile):
+def extract_spatial_data(nwbfile):
     # Access the 'Position' data interface
     position_data_interface = nwbfile.processing['behavior'].data_interfaces['Position']
 
@@ -120,7 +120,7 @@ def extract_spatial_data_obsolete(nwbfile):
     return spatial_data
 
 
-def extract_spatial_data(nwbfile, time_window="all", return_numpy=False):
+def extract_spatial_data_new(nwbfile, time_window="all", return_numpy=False):
     """
     Extract key‑point data from the NWB 'Position' interface.
 
