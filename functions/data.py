@@ -120,7 +120,7 @@ def extract_spatial_data_obsolete(nwbfile):
     return spatial_data
 
 
-def extract_spatial_data(nwbfile, *, time_window="all", return_numpy=False):
+def extract_spatial_data(nwbfile, time_window="all", return_numpy=False):
     """
     Extract key‑point data from the NWB 'Position' interface.
 
