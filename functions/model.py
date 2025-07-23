@@ -71,6 +71,7 @@ def RRR_modified(K, N, r=None, *, scale_X=False, scale_Y=False, ridge=None,
     misc = dict(K_mean=Km, N_mean=Nm)
     if scale_X: misc['K_std'] = Ks
     if scale_Y: misc['N_std'] = Ns
+        return A, C, Ns, Nm
     if return_misc:
         return A, C, misc
     return A, C
