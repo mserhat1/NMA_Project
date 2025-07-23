@@ -119,7 +119,7 @@ def extract_spatial_data(nwbfile):
     
     return spatial_data
 
-def stack_spatial(spatial_data):
+def windowed_spatial(spatial_data, time_window='all'):
     keypoints = spatial_data.keys()
 
     kp_data = []
@@ -141,7 +141,7 @@ def stack_spatial(spatial_data):
 
     kp_data = np.hstack(kp_data)
 
-    return stacked_spatial # ndarray o shape (n_samples, n_keypoints)
+    return kp_data
 
 
 
