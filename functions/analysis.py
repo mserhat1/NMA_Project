@@ -22,7 +22,7 @@ def keypoints_pca(spatial_data, interp_reference=None, plot=True):
     
     # interpolate
     if interp_reference is not None:
-        kp_interp = time_interpolate(kp_interp, interp_reference)
+        kp_interp = time_interpolate(kp_data, interp_reference)
 
     # scaling
     kp_scaled = StandardScaler().fit_transform(kp_interp)
