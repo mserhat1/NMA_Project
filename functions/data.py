@@ -94,7 +94,7 @@ def extract_neural_data(nwbfile, time_window='all', channel='all'):
     return ecog_data
 
 # Thanks to Amirreza for this function;
-def extract_spatial_data(nwbfile):
+def extract_spatial_data(nwbfile, time_window='all'):
     # Access the 'Position' data interface
     position_data_interface = nwbfile.processing['behavior'].data_interfaces['Position']
 
@@ -104,11 +104,21 @@ def extract_spatial_data(nwbfile):
     # Iterate through all spatial series (keypoints) in the Position data interface
     for keypoint_name, spatial_series in position_data_interface.spatial_series.items():
         # Get the data for the current keypoint
-        keypoint_data = spatial_series.data[:]
+        if time_window == 'all':
+            keypoint_data = spatial_series.data[:]
+        else:
+            rate = spatial_series.rate
+            s1, s2 = time_window * rate
+            keypoint_data = spatial_series.data[s1:s2]
 
         # Check if timestamps exist, otherwise generate them
         if spatial_series.timestamps is not None:
-            timestamps = spatial_series.timestamps[:]
+            if time_window == 'all':
+                timestamps = spatial_series.timestamps[:]
+            else:
+                rate = spatial_series.rate
+                s1, s2 = time_window * rate
+                timestamps = spatial_series.timestamps[s1:s2]
         else:
             starting_time = spatial_series.starting_time
             rate = spatial_series.rate
