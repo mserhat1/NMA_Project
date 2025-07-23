@@ -94,7 +94,7 @@ def extract_neural_data(nwbfile, time_window='all', channel='all'):
     return ecog_data
 
 # Thanks to Amirreza for this function;
-def extract_spatial_data(nwbfile):
+def extract_spatial_data_obsolete(nwbfile):
     # Access the 'Position' data interface
     position_data_interface = nwbfile.processing['behavior'].data_interfaces['Position']
 
@@ -117,6 +117,81 @@ def extract_spatial_data(nwbfile):
         # Store the data and timestamps in the dictionary with the keypoint name as the key
         spatial_data[keypoint_name] = {'data': keypoint_data, 'timestamps': timestamps, 'sampling_rate': spatial_series.rate}
     
+    return spatial_data
+
+
+def extract_spatial_data(nwbfile, *, time_window="all", return_numpy=False):
+    """
+    Extract key‑point data from the NWB 'Position' interface.
+
+    Parameters
+    ----------
+    nwbfile : pynwb.NWBFile
+        Open NWB file handle.
+    time_window : "all" | tuple(float, float)
+        "all" – return the full recording.
+        (t1, t2) – return data between t1 and t2 seconds, inclusive.
+    return_numpy : bool, default False
+        False – keep the returned 'data' fields as h5py.Dataset slices
+                (lazy, uses almost no RAM).
+        True  – read the slices into RAM as np.ndarray.
+
+    Returns
+    -------
+    spatial_data : dict
+        {keypoint_name: {"data", "timestamps", "sampling_rate"}}
+    """
+
+    position = nwbfile.processing["behavior"].data_interfaces["Position"]
+    spatial_data = {}
+
+    # ------------------------------------------------------------------
+    # Iterate over all key‑points
+    # ------------------------------------------------------------------
+    for name, series in position.spatial_series.items():
+
+        ds       = series.data                              # h5py.Dataset
+        n_samples = ds.shape[0]
+
+        # -------- timestamps ----------------------------------------
+        if series.timestamps is not None:                   # irregular/explicit
+            ts = series.timestamps[:]                       # NumPy copy
+            rate = 1.0 / np.median(np.diff(ts)) if len(ts) > 1 else np.nan
+        else:                                               # regular sampling
+            rate = float(series.rate)
+            ts = series.starting_time + np.arange(n_samples) / rate
+
+        # -------- determine slice indices ---------------------------
+        if time_window == "all":
+            s1, s2 = 0, n_samples
+        else:
+            t1, t2 = time_window
+            if t1 >= t2:
+                raise ValueError("Need 0 <= t1 < t2 for time_window")
+
+            if series.timestamps is not None:               # use searchsorted
+                s1 = np.searchsorted(ts, t1, side="left")
+                s2 = np.searchsorted(ts, t2, side="right")
+            else:                                           # compute directly
+                s1 = int((t1 - series.starting_time) * rate)
+                s2 = int((t2 - series.starting_time) * rate)
+
+            s1 = max(0, min(s1, n_samples))
+            s2 = max(0, min(s2, n_samples))
+
+        # -------- slice data & timestamps ---------------------------
+        data_slice = ds[s1:s2]                              # h5py slice
+        ts_slice   = ts[s1:s2]                              # NumPy slice
+
+        if return_numpy:
+            data_slice = data_slice[()]                    # load into RAM
+
+        spatial_data[name] = {
+            "data"         : data_slice,
+            "timestamps"   : ts_slice,
+            "sampling_rate": rate
+        }
+
     return spatial_data
 
 def windowed_spatial(spatial_data, time_window='all'):
