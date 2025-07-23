@@ -1,6 +1,6 @@
 from pynwb import NWBHDF5IO
 from dandi.dandiapi import DandiAPIClient
-from ndx_events import LabeledEvents, AnnotatedEventsTable, Events
+#from ndx_events import LabeledEvents, AnnotatedEventsTable, Events
 import fsspec
 import h5py
 from fsspec.implementations.cached import CachingFileSystem
