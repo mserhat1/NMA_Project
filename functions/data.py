@@ -108,7 +108,9 @@ def extract_spatial_data(nwbfile, time_window='all'):
             keypoint_data = spatial_series.data[:]
         else:
             rate = spatial_series.rate
-            s1, s2 = time_window * rate
+            t1, t2 = time_window
+            s1 = int(t1 * rate)
+            s2 = int(t2 * rate)
             keypoint_data = spatial_series.data[s1:s2]
 
         # Check if timestamps exist, otherwise generate them
