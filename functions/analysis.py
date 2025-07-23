@@ -20,18 +20,12 @@ def keypoints_pca(spatial_data, interp_reference=None, plot=True):
 
     kp_data = np.hstack(kp_data)
     
-    # interpolate over nan's
-    kp_interp = kp_data.copy()
-    for i in range(kp_data.shape[1]):
-        nans = np.isnan(kp_interp[:, i])
-        indices = np.arange(kp_interp.shape[0])
-        kp_interp[:, i] = np.interp(indices, indices[~nans], kp_data[:, i][~nans])
-
+    # interpolate
     if interp_reference is not None:
-        kp_interp_2 = time_interpolate(kp_interp, interp_reference)
+        kp_interp = time_interpolate(kp_interp, interp_reference)
 
     # scaling
-    kp_scaled = StandardScaler().fit_transform(kp_interp_2)
+    kp_scaled = StandardScaler().fit_transform(kp_interp)
 
     pca = PCA(n_components=len(kp_names))
     pca.fit_transform(kp_scaled)
