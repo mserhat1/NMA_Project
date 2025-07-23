@@ -119,6 +119,29 @@ def extract_spatial_data(nwbfile):
     
     return spatial_data
 
+def stack_spatial(spatial_data):
+    keypoints = spatial_data.keys()
+
+    kp_data = []
+    kp_names = []
+
+    for kp in keypoints:
+        if time_window == 'all':
+            kp_data.append(spatial_data[kp]['data'])
+        else:
+            rate = spatial_data[kp]['sampling_rate']
+            t1, t2 = time_window
+            assert t1 >= 0 and t2 <= spatial_data[kp]['data'].shape[
+                0] / rate and t1 < t2, 'We need 0 <= t1 < t2 <= duration of data'
+            s1 = int(t1 * rate)
+            s2 = int(t2 * rate)
+            kp_data.append(spatial_data[kp]['data'][s1:s2, :])
+
+        kp_names += [f'{kp}_X', f'{kp}_Y']
+
+    kp_data = np.hstack(kp_data)
+
+    return stacked_spatial # ndarray o shape (n_samples, n_keypoints)
 
 
 
