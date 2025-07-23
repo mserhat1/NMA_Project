@@ -18,11 +18,26 @@ def keypoints_pca(spatial_data, interp_reference=None, plot=True):
         kp_data.append(spatial_data[kp]['data'])
         kp_names += [f'{kp}_X', f'{kp}_Y']
 
-    kp_data = np.hstack(kp_data)
-    
+    data = np.hstack(kp_data)
+
+    data_interp = data.copy()
+    n_samples, n_channels = data.shape
+    x = np.arange(n_samples)
+
+    for ch in range(n_channels):
+        y = data_interp[:, ch]
+        nans = np.isnan(y)
+
+        if np.all(nans):
+            print(f"Channel {ch} is all NaNs — skipping interpolation.")
+            continue
+
+        # Interpolate only where needed
+        data_interp[nans, ch] = np.interp(x[nans], x[~nans], y[~nans])
+
     # interpolate
     if interp_reference is not None:
-        kp_interp = time_interpolate(kp_data, interp_reference)
+        kp_interp = time_interpolate(data_interp, interp_reference)
 
     # scaling
     kp_scaled = StandardScaler().fit_transform(kp_interp)
@@ -50,14 +65,23 @@ def ecog_pca(ecog_data, n_components, time_window='all',  plot=True):
     signal = ecog_data['signal'] # (n_samples, n_channels)
       
     # interpolate over nan's
-    signal_interp = signal.copy()
-    for i in range(signal_interp.shape[1]):
-        nans = np.isnan(signal_interp[:, i])
-        indices = np.arange(signal_interp.shape[0])
-        signal_interp[:, i] = np.interp(indices, indices[~nans], signal[:, i][~nans])
+    data_interp = signal.copy()
+    n_samples, n_channels = signal.shape
+    x = np.arange(n_samples)
+
+    for ch in range(n_channels):
+        y = data_interp[:, ch]
+        nans = np.isnan(y)
+
+        if np.all(nans):
+            print(f"Channel {ch} is all NaNs — skipping interpolation.")
+            continue
+
+        # Interpolate only where needed
+        data_interp[nans, ch] = np.interp(x[nans], x[~nans], y[~nans])
 
     # scaling
-    signal_scaled = StandardScaler().fit_transform(signal_interp)
+    signal_scaled = StandardScaler().fit_transform(data_interp)
 
     pca = PCA(n_components=n_components)
     pca.fit_transform(signal_scaled)
