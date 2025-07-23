@@ -15,6 +15,6 @@ def RRR(K, N):
     A = np.linalg.pinv(K) @ Ur @ Sr  # (d, r)
     C = Vr.T  # (D, r)
 
-    # inference: z =  X  @ A ;   Ŷ = z @ C.T
+    # inference: z =  K  @ A ;   N_est = z @ C.T
 
     return A, C
