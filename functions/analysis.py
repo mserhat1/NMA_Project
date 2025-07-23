@@ -8,24 +8,14 @@ import matplotlib.pyplot as plt
 # top_joints = n gives the n joints that contribute to the first PC the most
 # top_kps = n gives the n keypoints that contribute to the first PC the most
 # returns the array containing principal components in order of explained variance
-def keypoints_pca(spatial_data, interp_reference=None, time_window='all', plot=True):
+def keypoints_pca(spatial_data, interp_reference=None, plot=True):
     keypoints = spatial_data.keys()
 
     kp_data = []
     kp_names = []
 
     for kp in keypoints:
-        if time_window == 'all':
-            kp_data.append(spatial_data[kp]['data'])
-        else:
-            rate = spatial_data[kp]['sampling_rate']
-            t1, t2 = time_window
-            assert t1 >= 0 and t2 <= spatial_data[kp]['data'].shape[
-                0] / rate and t1 < t2, 'We need 0 <= t1 < t2 <= duration of data'
-            s1 = int(t1 * rate)
-            s2 = int(t2 * rate)
-            kp_data.append(spatial_data[kp]['data'][s1:s2, :])
-
+        kp_data.append(spatial_data[kp]['data'])
         kp_names += [f'{kp}_X', f'{kp}_Y']
 
     kp_data = np.hstack(kp_data)
