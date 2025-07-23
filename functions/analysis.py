@@ -3,12 +3,13 @@ from sklearn.decomposition import PCA
 from scipy.interpolate import interp1d
 import numpy as np
 import matplotlib.pyplot as plt
+from analysis import time_interpolate
 
 # pcs =
 # top_joints = n gives the n joints that contribute to the first PC the most
 # top_kps = n gives the n keypoints that contribute to the first PC the most
 # returns the array containing principal components in order of explained variance
-def keypoints_pca(spatial_data, time_window='all', plot=True):
+def keypoints_pca(spatial_data, interp_reference=None, time_window='all', plot=True):
     keypoints = spatial_data.keys()
 
     kp_data = []
@@ -29,7 +30,7 @@ def keypoints_pca(spatial_data, time_window='all', plot=True):
         kp_names += [f'{kp}_X', f'{kp}_Y']
 
     kp_data = np.hstack(kp_data)
-
+    
     # interpolate over nan's
     kp_interp = kp_data.copy()
     for i in range(kp_data.shape[1]):
@@ -37,8 +38,11 @@ def keypoints_pca(spatial_data, time_window='all', plot=True):
         indices = np.arange(kp_interp.shape[0])
         kp_interp[:, i] = np.interp(indices, indices[~nans], kp_data[:, i][~nans])
 
+    if interp_reference is not None:
+        kp_interp_2 = time_interpolate(kp_interp, interp_reference)
+
     # scaling
-    kp_scaled = StandardScaler().fit_transform(kp_interp)
+    kp_scaled = StandardScaler().fit_transform(kp_interp_2)
 
     pca = PCA(n_components=len(kp_names))
     pca.fit_transform(kp_scaled)
