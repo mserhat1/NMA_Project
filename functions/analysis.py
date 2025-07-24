@@ -96,7 +96,7 @@ def ecog_pca(ecog_data, n_components, time_window='all',  plot=True):
         plt.xlabel("Principal components")
         plt.ylabel("Explained variance ratio")
         plt.xticks(pc_vector)
-        plt.title("Variance ratio explained by each principal component")
+        plt.title("Variance ratio explained by each principal component, ECoG data")
 
     pca_output = {'components': pca.components_, 'kp_data': signal_scaled, 'pca': pca}
 
